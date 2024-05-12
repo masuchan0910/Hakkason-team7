@@ -84,6 +84,7 @@ const cards = [{
     "class": "cardback"
 }];
 
+//ユーザーの取得
 function getUsers(snapShot){
     const users = [];
     snapShot.forEach((doc) => {
@@ -92,11 +93,13 @@ function getUsers(snapShot){
     return users;
 }
 
+//ユーザーの読み込み
 async function loadUsers(){
     const snapShot = await getDocs(collection(db, "users"));
     return getUsers(snapShot);
 }
 
+//カードをシャッフルする処理
 function shuffle(shuffledCards){
     for(let i = 0; i < 32; i++){
         let j = Math.floor(Math.random() * (i + 1));
@@ -106,6 +109,7 @@ function shuffle(shuffledCards){
     }
 }
 
+//カードをシャッフルしたものを作成する処理
 const createShuffledCards = () => {
     let shuffledCards = []; 
     for(let i = 0; i < 16; i++){
@@ -122,10 +126,12 @@ const createShuffledCards = () => {
     return shuffledCards;
 }
 
+//カードをクリックしたときの処理
 const onclick = (e) => {
     if(turnFlag) turn(e);
 }
 
+//1枚のカードをユーザーに表示する処理
 function showCard(div, card, i){
     div.onclick = null;
     div.innerHTML = "";
@@ -142,6 +148,7 @@ function showCard(div, card, i){
     }
 }
 
+//ゲーム全体のカードをユーザーに示す処理
 function showCards(shuffledCards){
     const gameboard = document.getElementById("gameboard");
     for(let i = 0; i < shuffledCards.length; i++){
@@ -151,6 +158,7 @@ function showCards(shuffledCards){
     }
 }
 
+//カード一枚一枚を表示するためのタグを作成する処理
 function createCards(){
     const gameboard = document.getElementById("gameboard");
     for(let i = 0; i < 32; i++){
@@ -159,11 +167,13 @@ function createCards(){
     }
 }
 
+//プレイヤーがホストかどうか判定する処理
 function isHost(){
     const id = localStorage.getItem('user_id');
     return id === "1";
 }
 
+//シャッフルされたカードを取得する処理
 function getShuffledCards(snapShot){
     const shuffledCards = [];
     snapShot.forEach((doc) => {
@@ -174,6 +184,7 @@ function getShuffledCards(snapShot){
     return shuffledCards;
 }
 
+//次のユーザーを判定する市処理
 async function nextUser() {
     const drawUserIdNumber = Number(drawUserId) - 1;
     const nextUserIdNumber = (drawUserIdNumber + 1) % users.length;
@@ -181,11 +192,13 @@ async function nextUser() {
     await setDoc(doc(db, "status", "drawUserId"), { id: String(userId) });
 }
 
+//ドローするユーザーを返す処理
 function getDrawUser() {
     const drawUserIdNumber = Number(drawUserId) - 1;
     return users[drawUserIdNumber];
 }
 
+//次に誰がドローするかを示す処理
 function showDrawUser() {
     let username = document.getElementById("nextplayer");
     username.innerHTML = `${getDrawUser().name}さんの番です`;
@@ -244,6 +257,7 @@ let firstcard;
 //連続処理防止
 let backTimer;
 
+//カードが表を向く処理
 async function face(div) {
     const cardId = String(div.index);
     await updateDoc(doc(db, "cards", cardId), {
@@ -251,6 +265,7 @@ async function face(div) {
     });
 }
 
+//カードが消える処理
 async function finish(div) {
     const cardId = String(div.index);
     await updateDoc(doc(db, "cards", cardId), {
@@ -258,6 +273,7 @@ async function finish(div) {
     });
 }
 
+//カードを裏向きとする処理
 async function back(div) {
     const cardId = String(div.index);
     await updateDoc(doc(db, "cards", cardId), {
@@ -265,6 +281,7 @@ async function back(div) {
     });
 }
 
+//点数を加算する処理
 async function addScore(user, score) {
     const newScore = user.score + score;
     await updateDoc(doc(db, "users", drawUserId), {
@@ -272,6 +289,7 @@ async function addScore(user, score) {
     });
 }
 
+//ボーナススコアを加算する処理
 async function addBonusScore(user, bonusscore) {
     const newScore = user.bonusscore + bonusscore;
     await updateDoc(doc(db, "users", drawUserId), {
